@@ -175,6 +175,9 @@ public enum OAuth2Error: Error, CustomStringConvertible, Equatable {
 	/// Other response error, as defined in its String.
 	case responseError(String)
 	
+    /// yyb: refresh token error
+    case authorizationError
+	
 	
 	/**
 	Instantiate the error corresponding to the OAuth2 response code, if it is known.
@@ -184,6 +187,10 @@ public enum OAuth2Error: Error, CustomStringConvertible, Equatable {
 	- parameter fallback: The error string to use in case the error code is not known
 	- returns: An appropriate OAuth2Error
 	*/
+    /**
+     yahoo:
+     {"error":"INVALID_REFRESH_TOKEN","error_description":"Failed to decode/encode refresh token"}uccess", "result": {"email_provider_status": []}}success", "result": {"list": [], "ts": 0}}
+     */
 	public static func fromResponseError(_ code: String, description: String? = nil, fallback: String? = nil) -> OAuth2Error {
 		switch code {
 		case "invalid_request":
@@ -208,12 +215,17 @@ public enum OAuth2Error: Error, CustomStringConvertible, Equatable {
 			return .slowDown(description)
 		case "expired_token":
 			return .expiredToken(description)
+        case "INVALID_REFRESH_TOKEN": //yyb, yahoo
+            return .invalidGrant(description)
 		default:
 			return .responseError(description ?? fallback ?? "Authorization error: \(code)")
 		}
 	}
 	
 	/// Human understandable error string.
+    /// Yahoo: 400 {"error":"INVALID_REFRESH_TOKEN","error_description":"Failed to decode/encode refresh token"}
+    /// Gmail: 400 {"error": "invalid_grant", "error_description": "Bad Request"}
+    /// Gmail: 400 {"error": "invalid_grant", "error_description": "Token has been expired or revoked."}
 	public var description: String {
 		switch self {
 		case .generic(let message):
@@ -253,6 +265,9 @@ public enum OAuth2Error: Error, CustomStringConvertible, Equatable {
 			return "I don't have an access token, cannot sign request"
 		case .noRefreshToken:
 			return "I don't have a refresh token, not trying to refresh"
+		
+        case .authorizationError:
+            return "While refresh token, authorization failed"
 		
 		case .noRegistrationURL:
 			return "No registration URL defined"

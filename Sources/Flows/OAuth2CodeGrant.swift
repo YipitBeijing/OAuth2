@@ -131,8 +131,14 @@ open class OAuth2CodeGrant: OAuth2 {
 		guard let expectRedirect = context.redirectURL else {
 			throw OAuth2Error.noRedirectURL
 		}
+                //yyb: Yahoo need decode url
+                let urlString = redirect.absoluteString.removingPercentEncoding ?? ""
+                let redirectUrl = URL(string: urlString) ?? redirect
+                let redirect = redirectUrl
+        
 		let comp = URLComponents(url: redirect, resolvingAgainstBaseURL: true)
-		if !(redirect.absoluteString.hasPrefix(expectRedirect)) && (!(redirect.absoluteString.hasPrefix("urn:ietf:wg:oauth:2.0:oob")) && "localhost" != comp?.host) {
+                //yyb: the format is different. so redirect.absoluteString.hasPrefix -> redirect.absoluteString.contains
+		if !(redirect.absoluteString.contains(expectRedirect)) && (!(redirect.absoluteString.hasPrefix("urn:ietf:wg:oauth:2.0:oob")) && "localhost" != comp?.host) {
 			throw OAuth2Error.invalidRedirectURL("Expecting «\(expectRedirect)» but received «\(redirect)»")
 		}
 		if let compQuery = comp?.query, compQuery.count > 0 {

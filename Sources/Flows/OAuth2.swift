@@ -372,6 +372,11 @@ open class OAuth2: OAuth2Base {
 			
 			perform(request: post) { response in
 				do {
+                    //yyb
+                    if response.response.statusCode == 400 || response.response.statusCode == 401 {
+                        self.clientConfig.refreshToken = nil
+                        throw OAuth2Error.authorizationError
+                    }
 					let data = try response.responseData()
 					let json = try self.parseRefreshTokenResponseData(data)
 					if response.response.statusCode >= 400 {

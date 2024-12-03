@@ -62,7 +62,7 @@ open class OAuth2Authorizer: OAuth2AuthorizerUI {
 	- throws: UnableToOpenAuthorizeURL on failure
 	*/
 	public func openAuthorizeURLInBrowser(_ url: URL) throws {
-		
+#if !SHARE_EXTENSION
 		#if !P2_APP_EXTENSIONS && !os(visionOS)
 		guard UIApplication.shared.canOpenURL(url) else {
 			throw OAuth2Error.unableToOpenAuthorizeURL
@@ -75,6 +75,7 @@ open class OAuth2Authorizer: OAuth2AuthorizerUI {
 		#else
 		throw OAuth2Error.unableToOpenAuthorizeURL
 		#endif
+#endif
 	}
 	
 	/**
