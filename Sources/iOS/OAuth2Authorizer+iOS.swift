@@ -348,11 +348,31 @@ class OAuth2ASWebAuthenticationPresentationContextProvider: NSObject, ASWebAuthe
 			return context
 		}
 		
-		if let context = authorizer.oauth2.authConfig.authorizeContext as? UIViewController {
-			return context.view.window!
+		if let context = authorizer.oauth2.authConfig.authorizeContext as? UIViewController  {
+			if let window = context.view.window {
+				return window
+			} else {
+#if !SHARE_EXTENSION
+				if let window = UIApplication.shared.currentWindow {
+					return window
+				}
+#endif
+			}
 		}
 		
 		fatalError("Invalid authConfig.authorizeContext, must be an ASPresentationAnchor or UIViewController but is \(type(of: authorizer.oauth2.authConfig.authorizeContext))")
+	}
+}
+
+fileprivate extension UIApplication {
+	@available(iOS 13.0, *)
+	var currentWindow: UIWindow? {
+		connectedScenes
+		.filter({$0.activationState == .foregroundActive})
+		.map({$0 as? UIWindowScene})
+		.compactMap({$0})
+		.first?.windows
+		.filter({$0.isKeyWindow}).first
 	}
 }
 
