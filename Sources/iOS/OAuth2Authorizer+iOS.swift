@@ -155,29 +155,29 @@ open class OAuth2Authorizer: OAuth2AuthorizerUI {
 			oauth2.logger?.warn("OAuth2", msg: "Unable to parse redirect URL ”(redirect)“")
 			return false
 		}
-		let completionHandler: (URL?, Error?) -> Void = { url, error in
+		let completionHandler: (URL?, Error?) -> Void = { [weak self] (url, error) in
 			if let url = url {
 				do {
-					try self.oauth2.handleRedirectURL(url as URL)
+					try self?.oauth2.handleRedirectURL(url as URL)
 				}
 				catch let err {
-					self.oauth2.logger?.warn("OAuth2", msg: "Cannot intercept redirect URL: \(err)")
+					self?.oauth2.logger?.warn("OAuth2", msg: "Cannot intercept redirect URL: \(err)")
 				}
 			} else {
 				if let authenticationSessionError = error as? ASWebAuthenticationSessionError {
 					switch authenticationSessionError.code {
 					case .canceledLogin:
-						self.oauth2.didFail(with: .requestCancelled)
+						self?.oauth2.didFail(with: .requestCancelled)
 					default:
-						self.oauth2.didFail(with: error?.asOAuth2Error)
+						self?.oauth2.didFail(with: error?.asOAuth2Error)
 					}
 				}
 				else {
-					self.oauth2.didFail(with: error?.asOAuth2Error)
+					self?.oauth2.didFail(with: error?.asOAuth2Error)
 				}
 			}
-			self.authenticationSession = nil
-			self.webAuthenticationPresentationContextProvider = nil
+			self?.authenticationSession = nil
+			self?.webAuthenticationPresentationContextProvider = nil
 		}
 		
 		authenticationSession = ASWebAuthenticationSession(url: url, callbackURLScheme: redirectURL.scheme, completionHandler: completionHandler)
