@@ -178,6 +178,9 @@ public enum OAuth2Error: Error, CustomStringConvertible, Equatable {
     /// yyb: refresh token error
     case authorizationError
 	
+	/// cyp: oauth2 instance nil
+	case oauth2InstanceMissing
+	
 	
 	/**
 	Instantiate the error corresponding to the OAuth2 response code, if it is known.
@@ -325,6 +328,8 @@ public enum OAuth2Error: Error, CustomStringConvertible, Equatable {
 			return message ?? "The \"device_code\" has expired, and the device authorization session has concluded."
 		case .responseError(let message):
 			return message
+		case .oauth2InstanceMissing:
+			return "OAuth2 Instance return nil"
 		}
 	}
 	
