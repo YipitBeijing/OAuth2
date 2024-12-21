@@ -362,15 +362,18 @@ class OAuth2ASWebAuthenticationPresentationContextProvider: NSObject, ASWebAuthe
 		if let context = authorizer.oauth2?.authConfig.authorizeContext as? UIViewController  {
 			if let window = context.view.window {
 				return window
-			} else {
-#if !SHARE_EXTENSION
-				if let window = UIApplication.shared.currentWindow {
-					return window
-				}
-#endif
+			} else { // if the view controller is not in the view hierachy.
+				
 			}
 		}
 		
+#if !SHARE_EXTENSION
+		// when the authorizeContext is nil sometimes, we can use the current window
+		if let window = UIApplication.shared.currentWindow {
+			return window
+		}
+#endif
+		// currentWindow is nil, throw fatalerror, crash it
 		fatalError("Invalid authConfig.authorizeContext, must be an ASPresentationAnchor or UIViewController but is \(type(of: authorizer.oauth2?.authConfig.authorizeContext))")
 	}
 }
