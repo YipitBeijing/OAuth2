@@ -212,6 +212,33 @@ open class OAuth2: OAuth2Base {
 		}
 	}
 	
+	
+	/** yyb
+	A replacement of `authorize` to improve performance.
+
+	- parameter params: Optional key/value pairs to pass during authorization
+	- parameter callback: The callback to call when authorization finishes (parameters will be non-nil but may be an empty dict), fails or is canceled (error will be non-nil, e.g. `.requestCancelled` if auth was aborted)
+	*/
+	open func doAuthorize(params: OAuth2StringDict? = nil, callback: @escaping ((OAuth2JSON?, OAuth2Error?) -> Void)) {
+		
+		if isAuthorizing {
+			callback(nil, OAuth2Error.alreadyAuthorizing)
+			return
+		}
+		
+		didAuthorizeOrFail = callback
+						
+		do {
+			assert(Thread.isMainThread)
+			try self.doAuthorize(params: params)
+		}
+		catch let error {
+			self.didFail(with: error.asOAuth2Error)
+		}
+		
+	}
+	
+	
 	/**
 	Method to actually start authorization. The public `authorize()` method only proceeds to this method if there is no valid access token
 	and if optional client registration succeeds.
