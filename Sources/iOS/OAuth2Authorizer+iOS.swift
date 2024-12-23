@@ -382,7 +382,7 @@ fileprivate extension UIApplication {
 	@available(iOS 13.0, *)
 	var currentWindow: UIWindow? {
 		connectedScenes
-		.filter({$0.activationState == .foregroundActive})
+		//.filter({$0.activationState == .foregroundActive}) //The app may enter background when the user changes network.
 		.map({$0 as? UIWindowScene})
 		.compactMap({$0})
 		.first?.windows
