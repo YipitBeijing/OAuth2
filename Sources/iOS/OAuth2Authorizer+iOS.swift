@@ -368,6 +368,10 @@ class OAuth2ASWebAuthenticationPresentationContextProvider: NSObject, ASWebAuthe
 		}
 		
 #if !SHARE_EXTENSION
+        if let window = authorizer.oauth2?.authConfig.currentWindow {
+            return window
+        }
+        
 		// when the authorizeContext is nil sometimes, we can use the current window
 		if let window = UIApplication.shared.currentWindow {
 			return window

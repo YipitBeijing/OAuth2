@@ -74,6 +74,9 @@ public struct OAuth2AuthConfig {
 	/// - macOS: An NSWindow from which to present a modal sheet _or_ `nil` to present in a new window
 	public weak var authorizeContext: AnyObject? = nil
 	
+    /// Current Window
+    public weak var currentWindow: UIWindow? = nil
+    
 	/// UI-specific configuration.
 	public var ui = UI()
 }
