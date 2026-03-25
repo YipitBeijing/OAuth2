@@ -379,6 +379,9 @@ open class OAuth2: OAuth2Base {
 		if let clientId = clientId {
 			req.params["client_id"] = clientId
 		}
+		if let scope = clientConfig.scope, !scope.isEmpty {
+			req.params["scope"] = scope
+		}
 		req.add(params: params)
 		
 		return req
@@ -461,4 +464,3 @@ open class OAuth2: OAuth2Base {
 		}
 	}
 }
-

@@ -67,6 +67,9 @@ open class OAuth2CodeGrant: OAuth2 {
 		req.params["grant_type"] = type(of: self).grantType
 		req.params["redirect_uri"] = redirect
 		req.params["client_id"] = clientId
+		if let scope = clientConfig.scope, !scope.isEmpty {
+			req.params["scope"] = scope
+		}
 		if clientConfig.useProofKeyForCodeExchange {
 			req.params["code_verifier"] = context.codeVerifier
 		}
@@ -155,4 +158,3 @@ open class OAuth2CodeGrant: OAuth2 {
 		throw OAuth2Error.prerequisiteFailed("The redirect URL contains no query fragment")
 	}
 }
-
